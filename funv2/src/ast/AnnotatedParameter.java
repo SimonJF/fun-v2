@@ -7,7 +7,7 @@ public class AnnotatedParameter {
         this.name = name;
         this.type = type;
     }
-    public int getName() {
+    public String getName() {
         return name;
     }
     public Type getType() {
