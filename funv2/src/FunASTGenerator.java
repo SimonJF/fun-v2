@@ -1,11 +1,15 @@
 import java.util.LinkedList;
 import java.util.List;
 
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import antlr.FunBaseVisitor;
 import antlr.FunParser.AssnContext;
 import antlr.FunParser.BoolContext;
 import antlr.FunParser.ExprContext;
 import antlr.FunParser.FalseContext;
+import antlr.FunParser.FormalContext;
+import antlr.FunParser.FuncContext;
 import antlr.FunParser.FunccallContext;
 import antlr.FunParser.IdContext;
 import antlr.FunParser.IfContext;
@@ -13,11 +17,15 @@ import antlr.FunParser.IntContext;
 import antlr.FunParser.NotContext;
 import antlr.FunParser.NumContext;
 import antlr.FunParser.ParensContext;
+import antlr.FunParser.ProcContext;
+import antlr.FunParser.Proc_declContext;
 import antlr.FunParser.ProccallContext;
+import antlr.FunParser.ProgContext;
 import antlr.FunParser.Sec_exprContext;
 import antlr.FunParser.SeqContext;
 import antlr.FunParser.TrueContext;
 import antlr.FunParser.VarContext;
+import antlr.FunParser.Var_declContext;
 import antlr.FunParser.WhileContext;
 import ast.*;
 
@@ -147,7 +155,113 @@ public class FunASTGenerator {
             List<Statement> body = ctx.seq_com().children.stream().map(s -> visit(s)).toList();
             return new SWhile(test, body);
         }
-        
     }
 
+    public class FunProgramGenerator extends FunBaseVisitor<Program> {
+
+        private Type parseType(String tyStr) {
+            if (tyStr.equals("int")) {
+                return Type.INT;
+            } else if (tyStr.equals("bool")) {
+                return Type.BOOL;
+            } else {
+                throw new RuntimeException("Invalid type: " + tyStr);
+            }
+        } 
+
+
+        private class FunDeclGenerator extends FunBaseVisitor<Decl> {
+            @Override
+            public Decl visitVar(VarContext ctx) {
+                String id = ctx.ID().getText();
+                Type ty = parseType(ctx.type().getText());
+                Expr e = exprGen.visit(ctx.expr());
+                return new Decl(id, ty, e);
+            }
+        }
+
+        private class FunParamGenerator extends FunBaseVisitor<AnnotatedParameter> {
+
+            @Override
+            public AnnotatedParameter visitFormal(FormalContext ctx) {
+                String id = ctx.ID().getText();
+                Type ty = parseType(ctx.type().getText());
+                return new AnnotatedParameter(id, ty);
+            }
+
+        }
+
+        private FunExprGenerator exprGen = new FunExprGenerator();
+        private FunStatementGenerator stmtGen = new FunStatementGenerator();
+        private FunDeclGenerator declGen = new FunDeclGenerator();
+        private FunParamGenerator paramGen = new FunParamGenerator();
+
+        private class FunFunctionGenerator extends FunBaseVisitor<Function> {
+           
+
+        }
+
+        private class FunProcedureGenerator extends FunBaseVisitor<Procedure> {
+
+            @Override
+            public Procedure visitProc(ProcContext ctx) {
+                String id = ctx.ID().getText();
+                List<AnnotatedParameter> params =
+                    ctx.formal_decl_seq().children.stream().map(d -> paramGen.visit(d)).toList();
+                List<Decl> decls = ctx.var_decl().stream().map(d -> declGen.visit(d)).toList();
+                List<Statement> body = ctx.seq_com().children.stream().map(d -> stmtGen.visit(d)).toList();
+                return new Procedure(id, params, decls, body);
+            }
+        }
+
+        /*
+         * proc_decl
+	:	PROC ID
+		  LPAR formal_decl_seq? RPAR COLON
+		  var_decl* seq_com DOT   # proc
+
+	|	FUNC type ID
+		  LPAR formal_decl_seq? RPAR COLON
+		  var_decl* seq_com
+		  RETURN expr DOT         # func
+	;
+
+formal_decl_seq
+	:	formal_decl (COMMA formal_decl)* # formalseq
+	;
+
+formal_decl
+	:	type ID                # formal
+	;
+
+var_decl
+	:	type ID ASSN expr         # var
+	;
+
+type
+	:	BOOL                      # bool
+	|	INT                       # int
+	;
+         */
+        
+        @Override
+        public Program visitProg(ProgContext ctx) {
+            // 	:	var_decl* proc_decl+ EOF  # prog
+            FunFunctionGenerator funcGen = new FunFunctionGenerator();
+            FunProcedureGenerator procGen = new FunProcedureGenerator();
+            FunDeclGenerator declGen = new FunDeclGenerator();
+            List<Decl> globals = ctx.var_decl().stream().map(d -> declGen.visit(d)).toList();
+
+            List<Function> functions = ctx.proc_decl().stream()
+                                                .map(d -> funcGen.visit(d))
+                                                .filter(x -> x != null)
+                                                .toList();
+            List<Procedure> procedures = ctx.proc_decl().stream()
+                                                .map(d -> procGen.visit(d))
+                                                .filter(x -> x != null)
+                                                .toList();
+            return new Program(globals, procedures, functions);
+        }
+        
+    }
 }

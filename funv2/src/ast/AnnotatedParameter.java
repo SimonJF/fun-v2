@@ -1,9 +1,9 @@
 package ast;
 
 public class AnnotatedParameter {
-    private final int name;
+    private final String name;
     private final Type type;
-    public AnnotatedParameter(int name, Type type) {
+    public AnnotatedParameter(String name, Type type) {
         this.name = name;
         this.type = type;
     }
