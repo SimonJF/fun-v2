@@ -13,4 +13,9 @@ public class AnnotatedParameter {
     public Type getType() {
         return type;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s: %s", name, type.toString());
+    }
 }

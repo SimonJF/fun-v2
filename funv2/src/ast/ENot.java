@@ -11,7 +11,10 @@ public class ENot extends Expr {
         return expr;
     }
 
-
+    @Override
+    public String toString() {
+        return "!" + expr.toString();
+    }
 
 
 }

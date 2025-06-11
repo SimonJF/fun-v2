@@ -24,4 +24,8 @@ public class EBinOp extends Expr {
         return right;
     }
 
+    public String toString() {
+        return String.format("%s %s %s", left.toString(), op.toString(), right.toString());
+    }
+
 }

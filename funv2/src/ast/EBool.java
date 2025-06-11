@@ -12,5 +12,8 @@ public class EBool extends Expr {
         return value;
     }
 
+    public String toString() {
+        return String.valueOf(value);
+    }
 
 }

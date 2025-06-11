@@ -32,6 +32,25 @@ public class Procedure {
         return statements;
     }
 
-
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        // Header
+        sb.append("proc ");
+        sb.append(" ");
+        sb.append(name);
+        sb.append("(");
+        // Parameters
+        List<String> paramsList = parameters.stream().map(p -> p.getName() + " " + p.getType()).toList();
+        String paramsStr = String.join(", ", paramsList);
+        sb.append(paramsStr);
+        sb.append("):\n");
+        // Declarations
+        declarations.stream().forEach(d -> sb.append(d.toString().indent(2) + "\n"));
+        // Statements
+        statements.stream().forEach(s -> sb.append(s.toString().indent(2) + "\n"));
+        // End
+        sb.append(".");
+        return sb.toString();
+    }
 
 }

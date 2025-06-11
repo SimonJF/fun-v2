@@ -1,11 +1,8 @@
 import java.util.LinkedList;
 import java.util.List;
 
-import org.antlr.v4.runtime.tree.ParseTree;
-
 import antlr.FunBaseVisitor;
 import antlr.FunParser.AssnContext;
-import antlr.FunParser.BoolContext;
 import antlr.FunParser.ExprContext;
 import antlr.FunParser.FalseContext;
 import antlr.FunParser.FormalContext;
@@ -13,19 +10,15 @@ import antlr.FunParser.FuncContext;
 import antlr.FunParser.FunccallContext;
 import antlr.FunParser.IdContext;
 import antlr.FunParser.IfContext;
-import antlr.FunParser.IntContext;
 import antlr.FunParser.NotContext;
 import antlr.FunParser.NumContext;
 import antlr.FunParser.ParensContext;
 import antlr.FunParser.ProcContext;
-import antlr.FunParser.Proc_declContext;
 import antlr.FunParser.ProccallContext;
 import antlr.FunParser.ProgContext;
 import antlr.FunParser.Sec_exprContext;
-import antlr.FunParser.SeqContext;
 import antlr.FunParser.TrueContext;
 import antlr.FunParser.VarContext;
-import antlr.FunParser.Var_declContext;
 import antlr.FunParser.WhileContext;
 import ast.*;
 

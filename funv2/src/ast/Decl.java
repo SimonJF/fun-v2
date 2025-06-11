@@ -19,7 +19,10 @@ public class Decl {
         return body;
     }
 
-
+    @Override
+    public String toString() {
+        return String.format("%s %s = %s", var, type.toString(), body.toString());
+    }
 
 
 }

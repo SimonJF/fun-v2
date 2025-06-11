@@ -17,4 +17,9 @@ public class SAssign extends Statement {
         return expr;
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s = %s", var, expr.toString());
+    }
+
 }

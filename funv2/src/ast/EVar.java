@@ -12,4 +12,9 @@ public class EVar extends Expr {
         return var;
     }
 
+    @Override
+    public String toString() {
+        return var;
+    }
+
 }

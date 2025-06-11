@@ -3,12 +3,12 @@ package ast;
 import java.util.List;
 
 public class Program {
-    private List<Decl> global;
+    private List<Decl> globals;
     private List<Procedure> procedures;
     private List<Function> functions;
 
-    public List<Decl> getGlobal() {
-        return global;
+    public List<Decl> getGlobals() {
+        return globals;
     }
 
     public List<Procedure> getProcedures() {
@@ -43,9 +43,20 @@ public class Program {
     }
 
     public Program(List<Decl> global, List<Procedure> procedures, List<Function> functions) {
-        this.global = global;
+        this.globals = global;
         this.procedures = procedures;
         this.functions = functions;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        globals.stream().forEach(g -> sb.append(g.toString() + "\n"));
+        sb.append("\n");
+        procedures.stream().forEach(p -> sb.append(p.toString() + "\n"));
+        sb.append("\n");
+        functions.stream().forEach(f -> sb.append(f.toString() + "\n"));
+        return sb.toString();
     }
     
 

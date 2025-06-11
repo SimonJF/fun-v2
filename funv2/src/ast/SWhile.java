@@ -20,4 +20,9 @@ public class SWhile extends Statement {
         return body;
     }
 
+    @Override
+    public String toString() {
+        String bodyStr = statementsToString(body).indent(2);
+        return String.format("while %s:\n%s\n.", test.toString(), bodyStr);
+    }
 }

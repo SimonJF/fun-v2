@@ -17,4 +17,10 @@ public class SCall extends Statement {
         return arguments;
     }
 
+    @Override
+    public String toString() {
+        String argsStr = String.join(", ", arguments.stream().map(a -> a.toString()).toList());
+        return String.format("%s(%s)", name, argsStr);
+    }
+
 }
