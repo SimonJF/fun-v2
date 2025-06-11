@@ -8,14 +8,16 @@ public class Function {
     private List<AnnotatedParameter> params;
     private List<Decl> declarations;
     private List<Statement> statements;
+    private Expr returnExpr;
 
     public Function(Type returnType, String name, List<AnnotatedParameter> params,
-            List<Decl> declarations, List<Statement> statements) {
+            List<Decl> declarations, List<Statement> statements, Expr returnExpr) {
         this.returnType = returnType;
         this.name = name;
         this.params = params;
         this.declarations = declarations;
         this.statements = statements;
+        this.returnExpr = returnExpr;
     }
 
     public Type getReturnType() {
@@ -36,6 +38,10 @@ public class Function {
 
     public List<Statement> getStatements() {
         return statements;
+    }
+    
+    public Expr getReturnExpr() {
+        return returnExpr;
     }
 
 }

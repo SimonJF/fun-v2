@@ -197,7 +197,18 @@ public class FunASTGenerator {
         private FunParamGenerator paramGen = new FunParamGenerator();
 
         private class FunFunctionGenerator extends FunBaseVisitor<Function> {
-           
+
+            @Override
+            public Function visitFunc(FuncContext ctx) {
+                Type t = parseType(ctx.type().getText());
+                String name = ctx.ID().getText();
+                List<AnnotatedParameter> params =
+                    ctx.formal_decl_seq().children.stream().map(d -> paramGen.visit(d)).toList();
+                List<Decl> decls = ctx.var_decl().stream().map(d -> declGen.visit(d)).toList();
+                List<Statement> body = ctx.seq_com().children.stream().map(d -> stmtGen.visit(d)).toList();
+                Expr returnExpr = exprGen.visit(ctx.expr());
+                return new Function(t, name, params, decls, body, returnExpr);
+            }
 
         }
 
