@@ -13,7 +13,7 @@ public class ENot extends Expr {
 
     @Override
     public String toString() {
-        return "!" + expr.toString();
+        return String.format("not(%s)", expr.toString());
     }
 
 

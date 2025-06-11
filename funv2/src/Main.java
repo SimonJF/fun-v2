@@ -6,26 +6,26 @@ import antlr.*;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Scanner;
 
 public class Main {
 
-    /* TODO: Update boilerplate
     private static void parseAndRun(String code) {
         CharStream input = CharStreams.fromString(code);
-        LRecLexer lexer = new LRecLexer(input);
+        FunLexer lexer = new FunLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
-        LRecParser parser = new LRecParser(tokens);
+        FunParser parser = new FunParser(tokens);
 
-        ParseTree tree = parser.expr();
+        ParseTree tree = parser.program();
         System.out.println(tree.toString());
-        Expr ast = new LRecASTGenerator().visit(tree);
-        System.out.println(ast);
+        Program prog = new FunASTGenerator().visitProgram(tree);
+        System.out.println(prog);
+        /* 
         Expr noLetFuns = new DesugarFunLets().desugar(ast);
         Expr noLets = new DesugarLets().desugar(noLetFuns);
         System.out.println("Desugared: " + noLets);
-        Value result = (new LRecInterp()).interpExpr(noLets);
+        Value result = (new FunInterp()).interpExpr(noLets);
         System.out.println("Result: " + result);
+        */
     }
 
     public static void main(String[] args) throws Exception {
@@ -34,25 +34,8 @@ public class Main {
             String contents = Files.readString(Paths.get(inputFile));
             parseAndRun(contents);
         } else {
-            Scanner scanner = new Scanner(System.in);
-            for (;;) {
-                System.out.print("Input expression > ");
-                String code = scanner.nextLine();
-                if (code.equalsIgnoreCase("quit")) {
-                    scanner.close();
-                    System.exit(0);
-                } else {
-                    parseAndRun(code);
-                }
-
-            }
+            System.out.println("USAGE: ./fun.sh <filename name>");
         }
-    }
-
-    */
-
-    public static void main(String[] args) {
-        System.out.println("TODO");
     }
 
 }

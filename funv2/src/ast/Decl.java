@@ -21,7 +21,7 @@ public class Decl {
 
     @Override
     public String toString() {
-        return String.format("%s %s = %s", var, type.toString(), body.toString());
+        return String.format("%s %s = %s", type.toString(), var, body.toString());
     }
 
 

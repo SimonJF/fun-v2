@@ -23,6 +23,6 @@ public class SWhile extends Statement {
     @Override
     public String toString() {
         String bodyStr = statementsToString(body).indent(2);
-        return String.format("while %s:\n%s\n.", test.toString(), bodyStr);
+        return String.format("while %s:\n%s.", test.toString(), bodyStr);
     }
 }

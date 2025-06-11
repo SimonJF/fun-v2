@@ -36,7 +36,6 @@ public class Procedure {
         StringBuilder sb = new StringBuilder();
         // Header
         sb.append("proc ");
-        sb.append(" ");
         sb.append(name);
         sb.append("(");
         // Parameters
@@ -45,9 +44,9 @@ public class Procedure {
         sb.append(paramsStr);
         sb.append("):\n");
         // Declarations
-        declarations.stream().forEach(d -> sb.append(d.toString().indent(2) + "\n"));
+        declarations.stream().forEach(d -> sb.append(d.toString().indent(2)));
         // Statements
-        statements.stream().forEach(s -> sb.append(s.toString().indent(2) + "\n"));
+        statements.stream().forEach(s -> sb.append(s.toString().indent(2)));
         // End
         sb.append(".");
         return sb.toString();

@@ -1,5 +1,8 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.antlr.v4.runtime.tree.ParseTree;
 
 import antlr.FunBaseVisitor;
 import antlr.FunParser.AssnContext;
@@ -79,9 +82,9 @@ public class FunASTGenerator {
             Expr e2 = visit(ctx.e2);
             String opName = ctx.op.getText();
             Op op = switch (opName) {
-                case "EQ" -> Op.EQ;
-                case "LT" -> Op.LT;
-                case "GT" -> Op.GT;
+                case "==" -> Op.EQ;
+                case "<" -> Op.LT;
+                case ">" -> Op.GT;
                 default -> throw new RuntimeException("Invalid operator " + opName);
             };
             return new EBinOp(e1, op, e2);
@@ -98,10 +101,10 @@ public class FunASTGenerator {
             Expr e2 = visit(ctx.e2);
             String opName = ctx.op.getText();
             Op op = switch (opName) {
-                case "PLUS" -> Op.ADD;
-                case "MINUS" -> Op.SUB;
-                case "TIMES" -> Op.MUL;
-                case "DIV" -> Op.DIV;
+                case "+" -> Op.ADD;
+                case "-" -> Op.SUB;
+                case "*" -> Op.MUL;
+                case "/" -> Op.DIV;
                 default -> throw new RuntimeException("Invalid operator " + opName);
             };
             return new EBinOp(e1, op, e2);
@@ -210,8 +213,10 @@ public class FunASTGenerator {
             @Override
             public Procedure visitProc(ProcContext ctx) {
                 String id = ctx.ID().getText();
-                List<AnnotatedParameter> params =
-                    ctx.formal_decl_seq().children.stream().map(d -> paramGen.visit(d)).toList();
+                List<AnnotatedParameter> params = new ArrayList<>();
+                if (ctx.formal_decl_seq() != null) {
+                    params = ctx.formal_decl_seq().children.stream().map(d -> paramGen.visit(d)).toList();
+                }
                 List<Decl> decls = ctx.var_decl().stream().map(d -> declGen.visit(d)).toList();
                 List<Statement> body = ctx.seq_com().children.stream().map(d -> stmtGen.visit(d)).toList();
                 return new Procedure(id, params, decls, body);
@@ -254,6 +259,7 @@ type
             FunFunctionGenerator funcGen = new FunFunctionGenerator();
             FunProcedureGenerator procGen = new FunProcedureGenerator();
             FunDeclGenerator declGen = new FunDeclGenerator();
+            /* */
             List<Decl> globals = ctx.var_decl().stream().map(d -> declGen.visit(d)).toList();
 
             List<Function> functions = ctx.proc_decl().stream()
@@ -266,6 +272,9 @@ type
                                                 .toList();
             return new Program(globals, procedures, functions);
         }
-        
+    }
+
+    public Program visitProgram(ParseTree tree) {
+        return new FunProgramGenerator().visit(tree);
     }
 }
