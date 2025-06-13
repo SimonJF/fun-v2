@@ -2,6 +2,7 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import ast.*;
 import interp.Interp;
+import typecheck.Typecheck;
 import antlr.*;
 
 
@@ -20,6 +21,9 @@ public class Main {
         System.out.println(tree.toString());
         Program prog = new FunASTGenerator().visitProgram(tree);
         System.out.println("Parsed: " + prog);
+        System.out.println("Typechecking: ");
+        Typecheck tc = new Typecheck(prog);
+        tc.typecheckProgram();
         System.out.println("Interpreting: ");
         Interp interp = new Interp(prog);
         interp.interpProgram();

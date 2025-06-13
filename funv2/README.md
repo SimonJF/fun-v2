@@ -1,18 +1,22 @@
-## Getting Started
+# Fun v2
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+This repository contains my ongoing efforts to modernise the Fun programming
+language, used to teach COMPSCI4016 (Programming Languages) at the University of
+Glasgow.
 
-## Folder Structure
+It is very much not ready for primetime yet.
 
-The workspace contains two folders by default, where:
+The main changes are:
+  1. Explicit AST class hierarchy.
+  2. Recursion over visitors. My goal is to have a formal specification of
+     Fun's abstract syntax, semantics, and typing rules. Recursive definitions
+     have a much stronger correspondence to the rules than visitors (even if
+     visitors remove some boilerplate).
+  3. "Contextual Analysis" is replaced by a proper typechecking pass. Treating
+     environments as immutable removes a significant amount of complexity and
+     extraneous cognitive load.
+  4. I've written a tree-walk interpreter to start, but will of course also port
+     the SVM codegen.
+  5. As a longer-term plan (i.e., 26-27), I'd like to also write a RISC-V native
+     code generator (or supervise a student project to do so :))
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
-
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
