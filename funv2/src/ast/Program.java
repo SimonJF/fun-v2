@@ -1,26 +1,48 @@
 package ast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Program {
     private List<Decl> globals;
-    private List<Procedure> procedures;
-    private List<Function> functions;
+    private List<UserDefinedProcedure> procedures;
+    private List<UserDefinedFunction> functions;
+    private List<BuiltinFunction> builtinFunctions = new ArrayList<>();
+    private List<BuiltinProcedure> builtinProcedures = new ArrayList<>();
+
+
+    public Program(List<Decl> global, List<UserDefinedProcedure> procedures, List<UserDefinedFunction> functions) {
+        this.globals = global;
+        this.procedures = procedures;
+        this.functions = functions;
+
+        // Add builtins
+        builtinFunctions.add(new BuiltinFunction("read", List.of(), Type.INT));
+        builtinProcedures.add(new BuiltinProcedure("write", List.of(new AnnotatedParameter("x", Type.INT))));
+    }
+
 
     public List<Decl> getGlobals() {
         return globals;
     }
 
-    public List<Procedure> getProcedures() {
+    public List<UserDefinedProcedure> getProcedures() {
         return procedures;
     }
 
-    public List<Function> getFunctions() {
+    public List<UserDefinedFunction> getFunctions() {
         return functions;
     }
 
     public Function lookupFunction(String name) {
+        // First check user-defined functions
         for (Function f : functions) {
+            if (f.getName().equalsIgnoreCase(name)) {
+                return f;
+            }
+        }
+        // Then check builtins
+        for (Function f : builtinFunctions) {
             if (f.getName().equalsIgnoreCase(name)) {
                 return f;
             }
@@ -34,18 +56,17 @@ public class Program {
                 return p;
             }
         }
+        for (Procedure p : builtinProcedures) {
+            if (p.getName().equalsIgnoreCase(name)) {
+                return p;
+            }
+        }
         throw new RuntimeException("Procedure " + name + " not found");
 
     }
 
-    public Procedure getMain() {
-        return lookupProcedure("main");
-    }
-
-    public Program(List<Decl> global, List<Procedure> procedures, List<Function> functions) {
-        this.globals = global;
-        this.procedures = procedures;
-        this.functions = functions;
+    public UserDefinedProcedure getMain() {
+        return (UserDefinedProcedure) lookupProcedure("main");
     }
 
     @Override

@@ -18,7 +18,7 @@ public class Typecheck {
         }
     }
 
-    public void typecheckProcedure(Procedure p) {
+    public void typecheckProcedure(UserDefinedProcedure p) {
         // Extend globals with parameters of procedure to start
         ImmutableEnvironment<Type> tyEnv = globals;
         for (AnnotatedParameter param : p.getParameters()) {
@@ -33,7 +33,7 @@ public class Typecheck {
         typecheckStatements(tyEnv, p.getStatements());
     }
 
-    public void typecheckFunction(Function f) {
+    public void typecheckFunction(UserDefinedFunction f) {
         // As above, but also check that final expression matches given type
         ImmutableEnvironment<Type> tyEnv = globals;
         for (AnnotatedParameter param : f.getParameters()) {
@@ -54,22 +54,6 @@ public class Typecheck {
             throw new TypeErrorException(String.format("Type mismatch. Expected %s but got %s",
                 expected.toString(), actual.toString()));
         }
-    }
-
-    // FIXME HACKS: Need to replace with proper hierarchy
-    private Function lookupFunction(String name) {
-        if (name.equals("read")) {
-            return new Function(Type.INT, "read", List.of(), List.of(), List.of(), new EInt(0));
-        }
-        return program.lookupFunction(name);
-    }
-
-    private Procedure lookupProcedure(String name) {
-        if (name.equals("write")) {
-            return new Procedure("write", List.of(new AnnotatedParameter("i", Type.INT)), List.of(), List.of());
-        }
-        return program.lookupProcedure(name);
-
     }
 
     public void typecheckStatements(ImmutableEnvironment<Type> tyEnv, List<Statement> statements) {
@@ -98,10 +82,10 @@ public class Typecheck {
         if (s instanceof SAssign sa) {
             checkType(tyEnv.lookup(sa.getVar()), typecheckExpr(tyEnv, sa.getExpr()));
         } else if (s instanceof SCall sc) {
-            Procedure p = lookupProcedure(sc.getName());
+            Procedure p = program.lookupProcedure(sc.getName());
             checkArguments(tyEnv, p.getName(), p.getParameters(), sc.getArguments());
         } else if (s instanceof SCond sif) {
-            checkType(typecheckExpr(tyEnv, sif.getTest()), Type.INT);
+            checkType(typecheckExpr(tyEnv, sif.getTest()), Type.BOOL);
             typecheckStatements(tyEnv, sif.getThenBranch());
             sif.getElseBranch().ifPresent(elseBranch -> typecheckStatements(tyEnv, elseBranch));
         } else if (s instanceof SWhile sw) {
@@ -148,7 +132,7 @@ public class Typecheck {
                     throw new RuntimeException("Invalid operator: " + ebo.getOp().toString());
             }
         } else if (e instanceof ECall ec) {
-            Function f = lookupFunction(ec.getName());
+            Function f = program.lookupFunction(ec.getName());
             checkArguments(tyEnv, ec.getName(), f.getParameters(), ec.getArguments());
             return f.getReturnType();
         } else {

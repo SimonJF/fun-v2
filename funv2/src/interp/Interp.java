@@ -93,14 +93,23 @@ public class Interp {
         statements.forEach(s -> interpStatement(locals, s));
     }
 
-    private void callProcedure(MutableEnvironment<Value> locals, String name, List<Expr> arguments) {
+    private void interpBuiltinProcedure(MutableEnvironment<Value> locals, BuiltinProcedure bip, List<Expr> arguments) {
         // Need to special-case 'write'
-        if (name.equals("write")) {
+        if (bip.getName().equals("write")) {
             System.out.println(unwrapInt(interpExpr(locals, arguments.get(0))));
             return;
         }
-        // Procedure call; similar logic to function call
-        Procedure callee = program.lookupProcedure(name);
+        throw new RuntimeException("No implementation for builtin procedure: " + bip.getName());
+    }
+
+    private void callProcedure(MutableEnvironment<Value> locals, String name, List<Expr> arguments) {
+        Procedure proc = program.lookupProcedure(name);
+        if (proc instanceof BuiltinProcedure bip) {
+            interpBuiltinProcedure(locals, bip, arguments);
+            return;
+        }
+
+        UserDefinedProcedure callee = (UserDefinedProcedure) proc;
         List<String> params =
             callee
                 .getParameters()
@@ -121,6 +130,17 @@ public class Interp {
         interpStatements(newLocals, callee.getStatements());
     }
 
+    private Value interpBuiltinFunction(MutableEnvironment<Value> locals,
+        BuiltinFunction bif, List<Expr> args) {
+        
+        if (bif.getName().equals("read")) {
+            return new VInt(Integer.parseInt(scanner.nextLine()));
+        }
+
+        throw new RuntimeException("No implementation for builtin function " + bif.getName());
+
+    }
+
     public Value interpExpr(MutableEnvironment<Value> locals, Expr e) {
         if (e instanceof EVar v) {
             // Check locals first
@@ -135,12 +155,12 @@ public class Interp {
         } else if (e instanceof EInt i) {
             return new VInt(i.getValue());
         } else if (e instanceof ECall c) {
-            // Need to special-case 'read' (TODO: Better to have a class hierarchy)
-            if (c.getName().equals("read")) {
-                return new VInt(Integer.parseInt(scanner.nextLine()));
+            Function f = program.lookupFunction(c.getName());
+            if (f instanceof BuiltinFunction bif) {
+                return interpBuiltinFunction(locals, bif, c.getArguments());
             }
 
-            Function callee = program.lookupFunction(c.getName());
+            UserDefinedFunction callee = (UserDefinedFunction) f;
             // Populate new locals environment
             List<String> params =
                 callee
