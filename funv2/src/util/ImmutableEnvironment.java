@@ -47,4 +47,8 @@ public class ImmutableEnvironment<T> {
         }
     }
 
+    public boolean contains(String var) {
+        return env.containsKey(var);
+    }
+
 }

@@ -36,4 +36,8 @@ public class MutableEnvironment<T> {
         }
     }
 
+    public boolean contains(String var) {
+        return env.containsKey(var);
+    }
+
 }

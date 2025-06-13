@@ -1,6 +1,7 @@
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import ast.*;
+import interp.Interp;
 import antlr.*;
 
 
@@ -18,7 +19,10 @@ public class Main {
         ParseTree tree = parser.program();
         System.out.println(tree.toString());
         Program prog = new FunASTGenerator().visitProgram(tree);
-        System.out.println(prog);
+        System.out.println("Parsed: " + prog);
+        System.out.println("Interpreting: ");
+        Interp interp = new Interp(prog);
+        interp.interpProgram();
         /* 
         Expr noLetFuns = new DesugarFunLets().desugar(ast);
         Expr noLets = new DesugarLets().desugar(noLetFuns);
